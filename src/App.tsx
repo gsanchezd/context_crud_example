@@ -1,25 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import ContextLogin from "./ContextLogin";
+import ContextProduct, {ContextProductDefaultValues } from "./ContextProduct";
+
+import PrivateRoute from "./PrivateRouter";
+import Dashboard from "./Dashboard";
+import { BrowserRouter, Link, Switch } from "react-router-dom";
+import ListaProductos from "./ListaProductos";
 
 function App() {
+  const [login, setLogin] = useState(true);
+  const [products, setProducts] = useState<string[]>([
+    "Producto 1",
+    "Producto 2",
+  ]);
+  const addProduct = (productName: string) => {
+    setProducts([productName, ...products])
+  }
+  const removeProduct = (i:number) => {
+    console.log(i)
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <BrowserRouter>
+      <Link to="/dashboard"> Ir al dashboard </Link> |
+      Logueado: {login ? " si" : "no"}
+
+      <ContextLogin.Provider value={{ isLogin: login }}>
+        <ContextProduct.Provider
+          value={{
+            products,
+            addProduct,
+            removeProduct
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <ListaProductos />
+          <button onClick={() => setLogin(true)}> Login </button>
+
+          <Switch>
+            <PrivateRoute component={Dashboard} path="/dashboard" />
+          </Switch>
+        </ContextProduct.Provider>
+      </ContextLogin.Provider>
+    </BrowserRouter>
   );
 }
 
