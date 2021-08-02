@@ -1,7 +1,12 @@
 import { createContext } from "react";
 
+export type ProductType = {
+  id: number,
+  name: string
+}
+
 export type ContextProductType = {
-  products: string[];
+  products: ProductType[];
   addProduct: (name: string) => void;
   removeProduct: (key: number) => void;
 };
