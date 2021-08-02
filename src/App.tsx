@@ -8,11 +8,12 @@ import ContextProduct, {
 
 import PrivateRoute from "./PrivateRouter";
 import Dashboard from "./Dashboard";
-import { BrowserRouter, Link, Switch } from "react-router-dom";
+import { BrowserRouter, Link, Switch, useHistory } from "react-router-dom";
 import ListaProductos from "./ListaProductos";
 
 function App() {
   const [login, setLogin] = useState(false);
+  const [username, setUsername] = useState('');
   const initialProducts: Array<ProductType> = [
     { id: 1, name: "Producto 1" },
     { id: 2, name: "Producto 2" },
@@ -29,11 +30,15 @@ function App() {
     setProducts(products.filter((e) => (e.id !== id)));
   };
 
+  const logMeIn = () => {
+    if (username === "gonzalo")
+      setLogin(true)
+  }
+
   return (
     <BrowserRouter>
-      <Link to="/dashboard"> Ir al dashboard </Link> | Logueado:{" "}
-      {login ? " si" : "no"}
-      <ContextLogin.Provider value={{ isLogin: login }}>
+
+      <ContextLogin.Provider value={{ isLogin: login, logMeIn: logMeIn}}>
         <ContextProduct.Provider
           value={{
             products,
@@ -41,8 +46,18 @@ function App() {
             removeProduct,
           }}
         >
+          {login && 
+            <Link to="/dashboard"> Ir al dashboard </Link>
+
+          }
+          {!login && 
+          <div className="loginForm">
+            <input name="username" onChange={(e) => setUsername(e.target.value)} />
+            <button onClick={() => logMeIn()}> Login </button>
+          </div>
+          }
+
           <ListaProductos />
-          <button onClick={() => setLogin(true)}> Login </button>
 
           <Switch>
             <PrivateRoute component={Dashboard} path="/dashboard" />
